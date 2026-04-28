@@ -12,10 +12,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 if (process.env.NODE_ENV !== 'test') app.use(morgan('tiny'));
 
-app.use((req, res, next) => {
-  req.user = { id: 1, role: 'USER' };
-  next();
-});
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/trips', tripRoutes);
@@ -32,8 +29,19 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.use((req, res, next) => {
+  console.log(err.stack);
+  if (!err.status) {
+    err.status = 500;
+    err.message = 'Internal server error';
+  }
+  res.status(err.status).json({
+    error: err.message,
+  });
 });
+
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+};
 
 export default app;
