@@ -7,13 +7,8 @@ import {
 } from '../repositories/destinationRepo.js';
 
 export async function createDestination(data, userId) {
+  await getByUser(data.tripId, userId);
   const destination = await create(data);
-
-  // verify ownership through trip
-  if (destination.tripId) {
-    // handled in controller or later validation if needed
-  }
-
   return destination;
 }
 

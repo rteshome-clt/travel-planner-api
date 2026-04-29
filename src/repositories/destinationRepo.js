@@ -16,7 +16,10 @@ export async function getByUser(userId) {
 
 export async function getById(id) {
   return prisma.destination.findUnique({
-    where: { id }
+    where: { id },
+    include: {
+      trip: true,
+    },
   });
 }
 

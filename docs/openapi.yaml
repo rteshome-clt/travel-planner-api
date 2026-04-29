@@ -1,0 +1,799 @@
+openapi: 3.0.3
+
+info:
+  title: Travel Planner API
+  version: 1.0.0
+  description: API documentation for the Travel Planner API
+
+servers:
+  - url: http://localhost:3000/api
+
+tags:
+  - name: Auth
+    description: User authentication endpoints
+  - name: Trips
+    description: Trip management endpoints
+  - name: Destinations
+    description: Destination management endpoints
+  - name: Activities
+    description: Activity management endpoints
+
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpInput'
+      responses:
+        '201':
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/InvalidUserInput'
+        '409':
+          description: Email already exists
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Log in and receive a JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          $ref: '#/components/responses/InvalidUserInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /trips:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Trips
+      summary: Get all trips belonging to the authenticated user
+      responses:
+        '200':
+          description: List of trips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trip'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Trips
+      summary: Create a new trip
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTripInput'
+      responses:
+        '201':
+          description: Trip successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          $ref: '#/components/responses/InvalidTripInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /trips/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Trips
+      summary: Get a trip by ID
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Trip found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Trips
+      summary: Update a trip by ID
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTripInput'
+      responses:
+        '200':
+          description: Trip successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          $ref: '#/components/responses/InvalidTripInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Trips
+      summary: Delete a trip by ID
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: Trip successfully deleted
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /destinations:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Destinations
+      summary: Get all destinations connected to the authenticated user's trips
+      responses:
+        '200':
+          description: List of destinations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Destination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Destinations
+      summary: Create a destination within a trip
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDestinationInput'
+      responses:
+        '201':
+          description: Destination successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Destination'
+        '400':
+          $ref: '#/components/responses/InvalidDestinationInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /destinations/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Destinations
+      summary: Get a destination by ID
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Destination found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Destination'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Destinations
+      summary: Update a destination by ID
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDestinationInput'
+      responses:
+        '200':
+          description: Destination successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Destination'
+        '400':
+          $ref: '#/components/responses/InvalidDestinationInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Destinations
+      summary: Delete a destination by ID
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: Destination successfully deleted
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /activities:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Activities
+      summary: Get all activities connected to the authenticated user's destinations
+      responses:
+        '200':
+          description: List of activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Activities
+      summary: Create an activity for a destination
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActivityInput'
+      responses:
+        '201':
+          description: Activity successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '400':
+          $ref: '#/components/responses/InvalidActivityInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /activities/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Activities
+      summary: Get an activity by ID
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Activity found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Activities
+      summary: Update an activity by ID
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateActivityInput'
+      responses:
+        '200':
+          description: Activity successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '400':
+          $ref: '#/components/responses/InvalidActivityInput'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Activities
+      summary: Delete an activity by ID
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: Activity successfully deleted
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Ruth
+        email:
+          type: string
+          example: ruth@test.com
+        role:
+          type: string
+          example: USER
+
+    SignUpInput:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: Hermon
+        email:
+          type: string
+          example: hermon@test.com
+        password:
+          type: string
+          example: Password123!
+        role:
+          type: string
+          example: USER
+
+    LoginInput:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: ruth@test.com
+        password:
+          type: string
+          example: password123
+
+    Trip:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Europe Trip
+        startDate:
+          type: string
+          example: 2026-05-18
+        endDate:
+          type: string
+          example: 2026-06-01
+        budget:
+          type: number
+          example: 1500
+        userId:
+          type: integer
+          example: 1
+
+    CreateTripInput:
+      type: object
+      required:
+        - title
+        - startDate
+        - endDate
+        - budget
+      properties:
+        title:
+          type: string
+          example: Europe Trip
+        startDate:
+          type: string
+          example: 2026-05-18
+        endDate:
+          type: string
+          example: 2026-06-01
+        budget:
+          type: number
+          example: 1500
+
+    UpdateTripInput:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Updated Europe Trip
+        startDate:
+          type: string
+          example: 2026-05-20
+        endDate:
+          type: string
+          example: 2026-06-05
+        budget:
+          type: number
+          example: 1800
+
+    Destination:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        city:
+          type: string
+          example: Paris
+        country:
+          type: string
+          example: France
+        arrivalDate:
+          type: string
+          example: 2026-05-18
+        departureDate:
+          type: string
+          example: 2026-05-22
+        tripId:
+          type: integer
+          example: 1
+
+    CreateDestinationInput:
+      type: object
+      required:
+        - city
+        - country
+        - arrivalDate
+        - departureDate
+        - tripId
+      properties:
+        city:
+          type: string
+          example: Mallorca
+        country:
+          type: string
+          example: Spain
+        arrivalDate:
+          type: string
+          example: 2026-05-22
+        departureDate:
+          type: string
+          example: 2026-05-25
+        tripId:
+          type: integer
+          example: 1
+
+    UpdateDestinationInput:
+      type: object
+      properties:
+        city:
+          type: string
+          example: London
+        country:
+          type: string
+          example: United Kingdom
+        arrivalDate:
+          type: string
+          example: 2026-05-23
+        departureDate:
+          type: string
+          example: 2026-05-27
+
+    Activity:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Eiffel Tower Visit
+        description:
+          type: string
+          example: Visit the Eiffel Tower
+        date:
+          type: string
+          example: 2026-05-19
+        cost:
+          type: number
+          example: 50
+        destinationId:
+          type: integer
+          example: 1
+
+    CreateActivityInput:
+      type: object
+      required:
+        - name
+        - date
+        - cost
+        - destinationId
+      properties:
+        name:
+          type: string
+          example: Eiffel Tower Restuarant
+        description:
+          type: string
+          example: Eat at the Eiffel Tower Restuarant
+        date:
+          type: string
+          example: 2026-05-19
+        cost:
+          type: number
+          example: 50
+        destinationId:
+          type: integer
+          example: 1
+
+    UpdateActivityInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Louvre Museum
+        description:
+          type: string
+          example: Explore the Louvre
+        date:
+          type: string
+          example: 2026-05-20
+        cost:
+          type: number
+          example: 30
+
+  parameters:
+    ResourceId:
+      name: id
+      in: path
+      required: true
+      description: Resource ID
+      schema:
+        type: integer
+        example: 1
+
+  responses:
+    InvalidId:
+      description: Bad request due to invalid ID
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - Id must be a positive integer
+
+    InvalidUserInput:
+      description: Bad request due to invalid user input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - Email is required
+                - Password is required
+
+    InvalidTripInput:
+      description: Bad request due to invalid trip input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - Title is required
+                - Start date must be valid
+
+    InvalidDestinationInput:
+      description: Bad request due to invalid destination input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - City is required
+                - Trip ID must be a positive integer
+
+    InvalidActivityInput:
+      description: Bad request due to invalid activity input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - Name is required
+                - Destination ID must be a positive integer
+
+    Unauthorized:
+      description: Client is not authenticated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: Not authenticated. Please provide a valid token.
+
+    Forbidden:
+      description: User does not have permission
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: Forbidden
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: Resource not found
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

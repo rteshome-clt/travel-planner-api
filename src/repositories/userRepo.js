@@ -19,3 +19,4 @@ export async function createUser(data) {
 export async function findUserByEmail(email) {
     return prisma.user.findUnique({ where: { email } });
 }
+
