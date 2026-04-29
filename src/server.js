@@ -16,6 +16,14 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 if (process.env.NODE_ENV !== 'test') app.use(morgan('tiny'));
 
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Travel Planner API is running' });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 let specs;
 try {
   specs = yaml.load(fs.readFileSync('./docs/openapi.yaml', 'utf8'));
