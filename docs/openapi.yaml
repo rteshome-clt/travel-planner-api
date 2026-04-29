@@ -229,10 +229,6 @@ paths:
           $ref: '#/components/responses/InvalidDestinationInput'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
 
   /destinations/{id}:
     get:
@@ -351,10 +347,6 @@ paths:
           $ref: '#/components/responses/InvalidActivityInput'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
 
   /activities/{id}:
     get:
