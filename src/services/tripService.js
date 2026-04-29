@@ -23,8 +23,9 @@ export async function getTripById(id, userId) {
     return trip;
 }
 
-export async function updateTrip(id, updatedData) {
-    const updatedTrip = await update(id, updatedData);
+export async function updateTrip(id, userId, data) {
+    await getTripById(id, userId);
+    const updatedTrip = await update(id, data);
     if (updatedTrip) return updatedTrip;
     else {
         const error = new Error(`Trip ${id} not found`);
@@ -33,7 +34,8 @@ export async function updateTrip(id, updatedData) {
     }
 }
 
-export async function deleteTrip(id) {
+export async function deleteTrip(id, userId) {
+    await getTripById(id, userId);
     const result = await remove(id);
     if (result) return;
     else {

@@ -7,12 +7,18 @@ import {
   deleteDestinationHandler,
 } from '../controllers/destinationController.js';
 
+import {
+  validateDestinationId,
+  validateCreateDestination,
+  validateUpdateDestination
+} from '../middleware/destinationValidators.js';
+
 const router = express.Router();
 
-router.post('/', createDestinationHandler);
+router.post('/', validateCreateDestination, createDestinationHandler);
 router.get('/', getAllDestinationsHandler);
-router.get('/:id', getDestinationByIdHandler);
-router.put('/:id', updateDestinationHandler);
-router.delete('/:id', deleteDestinationHandler);
+router.get('/:id', validateDestinationId, getDestinationByIdHandler);
+router.put('/:id', validateDestinationId, validateUpdateDestination, updateDestinationHandler);
+router.delete('/:id', validateDestinationId, deleteDestinationHandler);
 
 export default router;

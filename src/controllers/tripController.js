@@ -1,14 +1,23 @@
 import { createTrip, getTripById, getTripsByUser, updateTrip, deleteTrip } from "../services/tripService.js";
+import { format } from 'date-fns';
+
+function formatTrip(trip) {
+  return {
+    ...trip,
+    startDate: format(trip.startDate, "yyyy-MM-dd"),
+    endDate: format(trip.endDate, "yyyy-MM-dd"),
+  };
+}
 
 export async function getAllTripsHandler(req, res) {
   const trips = await getTripsByUser(req.user.id);
-  res.status(200).json(trips);
+  res.status(200).json(trips.map(formatTrip));
 }
 
 export async function getTripByIdHandler(req, res) {
   const id = parseInt(req.params.id);
   const trip = await getTripById(id, req.user.id);
-  res.status(200).json(trip);
+  res.status(200).json(formatTrip(trip));
 }
 
 export async function createTripHandler(req, res) {
@@ -16,13 +25,13 @@ export async function createTripHandler(req, res) {
 
   const newTrip = await createTrip({
     title,
-    startDate,
-    endDate,
+    startDate: new Date(startDate),
+    endDate: new Date(endDate),
     budget,
     userId: req.user.id,
   });
 
-  res.status(201).json(newTrip);
+  res.status(201).json(formatTrip(newTrip));
 }
 
 export async function updateTripHandler(req, res) {
@@ -31,12 +40,12 @@ export async function updateTripHandler(req, res) {
 
   const updatedTrip = await updateTrip(id, req.user.id, {
     title,
-    startDate,
-    endDate,
+    startDate: new Date(startDate),
+    endDate: new Date(endDate),
     budget,
   });
 
-  res.status(200).json(updatedTrip);
+  res.status(200).json(formatTrip(updatedTrip));
 }
 
 export async function deleteTripHandler(req, res) {

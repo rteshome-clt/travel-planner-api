@@ -1,9 +1,9 @@
 import express from 'express';
 import { signUpHandler, loginHandler } from '../controllers/authController.js';
-
+import { validateSignUp, validateLogIn } from '../middleware/userValidators.js';
 const router = express.Router();
 
-router.post('/signup', signUpHandler);
-router.post('/login', loginHandler);
+router.post('/signup', validateSignUp, signUpHandler);
+router.post('/login', validateLogIn, loginHandler);
 
 export default router;

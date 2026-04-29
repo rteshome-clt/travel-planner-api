@@ -5,16 +5,26 @@ import {
   updateDestination,
   deleteDestination,
 } from '../services/destinationService.js';
+import { format } from 'date-fns';
+
+function formatDestination(destination) {
+  return {
+    ...destination,
+    arrivalDate: format(destination.arrivalDate, "yyyy-MM-dd"),
+    departureDate: format(destination.departureDate, "yyyy-MM-dd"),
+  };
+}
+
 
 export async function getAllDestinationsHandler(req, res) {
   const destinations = await getDestinations(req.user.id);
-  res.status(200).json(destinations);
+  res.status(200).json(destinations.map(formatDestination));
 }
 
 export async function getDestinationByIdHandler(req, res) {
   const id = parseInt(req.params.id);
   const destination = await getDestinationById(id, req.user.id);
-  res.status(200).json(destination);
+  res.status(200).json(formatDestination(destination));
 }
 
 export async function createDestinationHandler(req, res) {
@@ -31,7 +41,7 @@ export async function createDestinationHandler(req, res) {
     req.user.id
   );
 
-  res.status(201).json(newDestination);
+  res.status(201).json(formatDestination(newDestination));
 }
 
 export async function updateDestinationHandler(req, res) {
@@ -45,7 +55,7 @@ export async function updateDestinationHandler(req, res) {
     departureDate: new Date(departureDate),
   });
 
-  res.status(200).json(updatedDestination);
+  res.status(200).json(formatDestination(updatedDestination));
 }
 
 export async function deleteDestinationHandler(req, res) {
