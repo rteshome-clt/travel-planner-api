@@ -1,22 +1,27 @@
 import {
   create,
+  getAll,
   getByUser,
   getById,
   update,
   remove,
 } from '../repositories/destinationRepo.js';
+import { getTripById } from './tripService.js';
 
-export async function createDestination(data, userId) {
-  await getByUser(data.tripId, userId);
+export async function createDestination(data, user) {
+  await getTripById(data.tripId, user);
   const destination = await create(data);
   return destination;
 }
 
-export async function getDestinations(userId) {
-  return getByUser(userId);
+export async function getDestinations(user) {
+  if (user.role === 'ADMIN') {
+    return getAll();
+  }
+  return getByUser(user.id);
 }
 
-export async function getDestinationById(id, userId) {
+export async function getDestinationById(id, user) {
   const destination = await getById(id);
 
   if (!destination) {
@@ -25,7 +30,7 @@ export async function getDestinationById(id, userId) {
     throw error;
   }
 
-  if (destination.trip.userId !== userId) {
+  if (destination.trip.userId !== user.id && user.role !== 'ADMIN') {
     const error = new Error('Forbidden');
     error.status = 403;
     throw error;
@@ -34,12 +39,12 @@ export async function getDestinationById(id, userId) {
   return destination;
 }
 
-export async function updateDestination(id, userId, data) {
-  await getDestinationById(id, userId);
+export async function updateDestination(id, user, data) {
+  await getDestinationById(id, user);
   return update(id, data);
 }
 
-export async function deleteDestination(id, userId) {
-  await getDestinationById(id, userId);
+export async function deleteDestination(id, user) {
+  await getDestinationById(id, user);
   return remove(id);
 }

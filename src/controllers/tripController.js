@@ -10,13 +10,13 @@ function formatTrip(trip) {
 }
 
 export async function getAllTripsHandler(req, res) {
-  const trips = await getTripsByUser(req.user.id);
+  const trips = await getTripsByUser(req.user);
   res.status(200).json(trips.map(formatTrip));
 }
 
 export async function getTripByIdHandler(req, res) {
   const id = parseInt(req.params.id);
-  const trip = await getTripById(id, req.user.id);
+  const trip = await getTripById(id, req.user);
   res.status(200).json(formatTrip(trip));
 }
 
@@ -38,7 +38,7 @@ export async function updateTripHandler(req, res) {
   const id = parseInt(req.params.id);
   const { title, startDate, endDate, budget } = req.body;
 
-  const updatedTrip = await updateTrip(id, req.user.id, {
+  const updatedTrip = await updateTrip(id, req.user, {
     title,
     startDate: new Date(startDate),
     endDate: new Date(endDate),
@@ -51,7 +51,7 @@ export async function updateTripHandler(req, res) {
 export async function deleteTripHandler(req, res) {
   const id = parseInt(req.params.id);
 
-  await deleteTrip(id, req.user.id);
+  await deleteTrip(id, req.user);
 
   res.status(204).send();
 }

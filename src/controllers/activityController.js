@@ -15,13 +15,13 @@ function formatActivity(activity) {
 }
 
 export async function getAllActivitiesHandler(req, res) {
-  const activities = await getActivities(req.user.id);
+  const activities = await getActivities(req.user);
   res.status(200).json(activities.map(formatActivity));
 }
 
 export async function getActivityByIdHandler(req, res) {
   const id = parseInt(req.params.id);
-  const activity = await getActivityById(id, req.user.id);
+  const activity = await getActivityById(id, req.user);
   res.status(200).json(formatActivity(activity));
 }
 
@@ -34,7 +34,9 @@ export async function createActivityHandler(req, res) {
     date: new Date(date),
     cost,
     destinationId,
-  });
+    }, 
+    req.user
+  );
 
   res.status(201).json(formatActivity(newActivity));
 }
@@ -43,7 +45,7 @@ export async function updateActivityHandler(req, res) {
   const id = parseInt(req.params.id);
   const { name, description, date, cost } = req.body;
 
-  const updatedActivity = await updateActivity(id, req.user.id, {
+  const updatedActivity = await updateActivity(id, req.user, {
     name,
     description,
     date: new Date(date),
@@ -55,6 +57,6 @@ export async function updateActivityHandler(req, res) {
 
 export async function deleteActivityHandler(req, res) {
   const id = parseInt(req.params.id);
-  await deleteActivity(id, req.user.id);
+  await deleteActivity(id, req.user);
   res.status(204).send();
 }

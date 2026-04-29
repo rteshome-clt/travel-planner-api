@@ -1,17 +1,33 @@
 import prisma from '../config/db.js';
 
-export async function create(data) {
-  return prisma.destination.create({ data });
+export async function getAll() {
+  const destinations = await prisma.destination.findMany({
+    orderBy: {
+      id: 'asc',
+    },
+    include: {
+      trip: true,
+    },
+  });
+  return destinations;
 }
 
 export async function getByUser(userId) {
-  return prisma.destination.findMany({
+  const destinations = await prisma.destination.findMany({
     where: {
       trip: {
         userId,
       },
-    }
+    },
+    orderBy: {
+      id: 'asc',
+    },
   });
+  return destinations;  
+}
+
+export async function create(data) {
+  return prisma.destination.create({ data });
 }
 
 export async function getById(id) {

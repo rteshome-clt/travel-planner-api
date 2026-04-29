@@ -1,5 +1,25 @@
 import prisma from "../config/db.js";
 
+export async function getAll() {
+  const trips = await prisma.trip.findMany({
+    orderBy: {
+      id: 'asc',
+    },
+  });
+  return trips;
+}
+
+//get all trips belonging to a user
+export async function getByUser(userId) {
+    const trip = await prisma.trip.findMany({ 
+        where: { userId }, 
+        orderBy: {
+            id: 'asc',
+        }
+    });
+    return trip;
+}
+
 //create a new trip
 export async function create(data) {
     try{ 
@@ -9,15 +29,6 @@ export async function create(data) {
         console.error('Error creating trip:', error);
         throw error;
     }
-}
-
-
-//get all trips belonging to a user
-export async function getByUser(userId) {
-    const trip = await prisma.trip.findMany({ 
-        where: { userId }
-    });
-    return trip;
 }
 
 //get trip by id

@@ -17,13 +17,13 @@ function formatDestination(destination) {
 
 
 export async function getAllDestinationsHandler(req, res) {
-  const destinations = await getDestinations(req.user.id);
+  const destinations = await getDestinations(req.user);
   res.status(200).json(destinations.map(formatDestination));
 }
 
 export async function getDestinationByIdHandler(req, res) {
   const id = parseInt(req.params.id);
-  const destination = await getDestinationById(id, req.user.id);
+  const destination = await getDestinationById(id, req.user);
   res.status(200).json(formatDestination(destination));
 }
 
@@ -38,7 +38,7 @@ export async function createDestinationHandler(req, res) {
       departureDate: new Date(departureDate),
       tripId,
     },
-    req.user.id
+    req.user
   );
 
   res.status(201).json(formatDestination(newDestination));
@@ -48,7 +48,7 @@ export async function updateDestinationHandler(req, res) {
   const id = parseInt(req.params.id);
   const { city, country, arrivalDate, departureDate } = req.body;
 
-  const updatedDestination = await updateDestination(id, req.user.id, {
+  const updatedDestination = await updateDestination(id, req.user, {
     city,
     country,
     arrivalDate: new Date(arrivalDate),
@@ -60,6 +60,6 @@ export async function updateDestinationHandler(req, res) {
 
 export async function deleteDestinationHandler(req, res) {
   const id = parseInt(req.params.id);
-  await deleteDestination(id, req.user.id);
+  await deleteDestination(id, req.user);
   res.status(204).send();
 }

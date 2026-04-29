@@ -1,19 +1,39 @@
 import prisma from '../config/db.js';
 
+export async function getAll() {
+  const activities = await prisma.activity.findMany({
+    orderBy: {
+      id: 'asc',
+    },
+    include: {
+      destination: {
+        include: {
+          trip: true,
+        },
+      },
+    },
+  });
+  return activities;
+}
+
 export async function create(data) {
   return prisma.activity.create({ data });
 }
 
 export async function getByUser(userId) {
-  return prisma.activity.findMany({
+  const activities = await prisma.activity.findMany({
     where: {
       destination: {
         trip: {
           userId,
         },
       },
-    }
+    },
+    orderBy: {
+      id: 'asc',
+    },
   });
+  return activities;
 }
 
 export async function getById(id) {
